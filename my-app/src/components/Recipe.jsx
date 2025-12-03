@@ -38,6 +38,12 @@ export default function Recipe()
         setInstructions("");
     }
 
+    //Delete Recipe
+    const handleDelete=(id)=>{
+        const updatedRecipes=recipes.filter((r)=>r.id!==id)
+        saveRecipes(updatedRecipes);
+    }
+
     return(
         <>
         <div style={{maxWidth:"600px",margin:"20px auto"}}>
@@ -60,11 +66,27 @@ export default function Recipe()
             <input type="text" style={{width:"100%",padding:"5px",border:"1.2px solid #030303ff"}} value={instructions} onChange={(e)=>setInstructions(e.target.value)} />
             </div>
 
-            <button style={{padding:"5px 10px",border:"1.2px solid #030303ff"}} type="submit">
+            <button style={{padding:"5px 10px",border:"2px solid #030303ff"}} type="submit">
             Add Recipe
             </button>
 
             </form>
+        </div><br />
+
+        <div style={{maxWidth:"600px",margin:"14px auto"}}>
+            <h3>All Recipe</h3>
+            {recipes.length===0 && <p>No recipes added yet</p>}
+
+            {recipes.map((r)=>(
+                <div key={r.id} style={{border:"1.2px solid #030303ff",padding:"7px",marginBottom:"17px"}}>
+                    <h4>Recipe Name:&nbsp;{r.name}</h4>
+                    <p><strong>Ingredients:</strong></p>
+                    <ul>{r.ingredients}</ul>
+                    <p><strong>Instructions:&nbsp;{r.instructions}</strong></p>
+                    <button style={{padding:"3px 8px",marginRight:"5px",border:"1.8px solid #030303ff"}}>Edit</button>&nbsp;&nbsp;
+                    <button onClick={()=>handleDelete(r.id)} style={{padding:"3px 8px",border:"1.8px solid #030303ff"}}>Delete</button>
+                </div>
+            ))}
         </div>
         </>
     )
