@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function Recipe()
 {
@@ -7,6 +7,7 @@ export default function Recipe()
     const [ingredients,setIngredients]=useState("");
     const [instructions,setInstructions]=useState("");
     const [recipes,setRecipes]=useState([]);
+    const [editingId,setEditingId]=useState(null);
 
     //Save recipes to localstorage
     const saveRecipes=(updatedRecipes)=>{
@@ -14,7 +15,12 @@ export default function Recipe()
         setRecipes(updatedRecipes);
     }
 
-    //Load Recipes
+//Load
+useEffect(()=>{
+const storedRecipes=JSON.parse(localStorage.getItem("recipes"))||[];
+setRecipes(storedRecipes)
+
+},[])
 
     //Add Recipes
     const handleSubmit=(e)=>{
@@ -22,6 +28,15 @@ export default function Recipe()
         if(!recipename || !ingredients || !instructions)
         {
             alert("Please fill all the fields");
+        }
+
+        if(editingId)
+        {
+            const updatedRecipes=recipes.map((r)=>
+            r.id===editingId?{...r,name:recipename,ingredients,instructions}:r
+        )
+        saveRecipes(updatedRecipes);
+        setEditingId(null);
         }
         else
         {
@@ -42,6 +57,14 @@ export default function Recipe()
     const handleDelete=(id)=>{
         const updatedRecipes=recipes.filter((r)=>r.id!==id)
         saveRecipes(updatedRecipes);
+    }
+
+    //Editing Recipe
+    const handleEdit=(r)=>{
+        setRecipeName(r.name);
+        setIngredients(r.ingredients);
+        setInstructions(r.instructions);
+        setEditingId(r.id);
     }
 
     return(
@@ -67,7 +90,7 @@ export default function Recipe()
             </div>
 
             <button style={{padding:"5px 10px",border:"2px solid #030303ff"}} type="submit">
-            Add Recipe
+            { editingId ?"Update Recipe":"Add Recipe"}
             </button>
 
             </form>
@@ -83,7 +106,7 @@ export default function Recipe()
                     <p><strong>Ingredients:</strong></p>
                     <ul>{r.ingredients}</ul>
                     <p><strong>Instructions:&nbsp;{r.instructions}</strong></p>
-                    <button style={{padding:"3px 8px",marginRight:"5px",border:"1.8px solid #030303ff"}}>Edit</button>&nbsp;&nbsp;
+                    <button style={{padding:"3px 8px",marginRight:"5px",border:"1.8px solid #030303ff"}} onClick={()=>handleEdit(r)}>Edit</button>&nbsp;&nbsp;
                     <button onClick={()=>handleDelete(r.id)} style={{padding:"3px 8px",border:"1.8px solid #030303ff"}}>Delete</button>
                 </div>
             ))}
